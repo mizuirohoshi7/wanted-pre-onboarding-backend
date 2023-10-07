@@ -3,12 +3,10 @@ package com.wantedpreonboardingbackend.controller;
 import com.wantedpreonboardingbackend.dto.Result;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentResponse;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSaveParam;
+import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentUpdateParam;
 import com.wantedpreonboardingbackend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -21,6 +19,12 @@ public class RecruitmentController {
     public Result<RecruitmentResponse> save(@RequestBody RecruitmentSaveParam saveParam) {
         RecruitmentResponse response = recruitmentService.save(saveParam);
         return new Result<>("채용공고 등록에 성공했습니다", response);
+    }
+
+    @PatchMapping("/{recruitmentId}")
+    public Result<RecruitmentResponse> update(@PathVariable Long recruitmentId, @RequestBody RecruitmentUpdateParam updateParam) {
+        RecruitmentResponse response = recruitmentService.update(recruitmentId, updateParam);
+        return new Result<>("채용공고 수정에 성공했습니다", response);
     }
 
 }

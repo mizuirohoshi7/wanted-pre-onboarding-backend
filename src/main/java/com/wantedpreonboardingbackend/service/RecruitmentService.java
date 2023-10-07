@@ -4,6 +4,8 @@ import com.wantedpreonboardingbackend.domain.Company;
 import com.wantedpreonboardingbackend.domain.Recruitment;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentResponse;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSaveParam;
+import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentUpdateParam;
+import com.wantedpreonboardingbackend.exception.DataNotFoundException;
 import com.wantedpreonboardingbackend.repository.CompanyRepository;
 import com.wantedpreonboardingbackend.repository.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,8 @@ public class RecruitmentService {
     private final CompanyRepository companyRepository;
 
     public RecruitmentResponse save(RecruitmentSaveParam saveParam) {
-        Company company = companyRepository.findById(saveParam.getCompanyId()).orElseThrow();
+        Company company = companyRepository.findById(saveParam.getCompanyId())
+                .orElseThrow(() -> new DataNotFoundException("해당 회사가 존재하지 않습니다"));
 
         Recruitment recruitment = Recruitment.builder()
                 .company(company)
@@ -34,6 +37,15 @@ public class RecruitmentService {
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
 
         return new RecruitmentResponse(savedRecruitment);
+    }
+
+    public RecruitmentResponse update(Long recruitmentId, RecruitmentUpdateParam updateParam) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new DataNotFoundException("해당 채용공고가 존재하지 않습니다"));
+
+        Recruitment updatedRecruitment = recruitment.update(updateParam);
+
+        return new RecruitmentResponse(updatedRecruitment);
     }
 
 }

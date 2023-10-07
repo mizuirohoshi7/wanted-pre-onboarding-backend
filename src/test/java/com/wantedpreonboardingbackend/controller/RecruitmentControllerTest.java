@@ -1,28 +1,27 @@
 package com.wantedpreonboardingbackend.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wantedpreonboardingbackend.domain.Company;
 import com.wantedpreonboardingbackend.domain.Recruitment;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentResponse;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSaveParam;
+import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentUpdateParam;
 import com.wantedpreonboardingbackend.service.RecruitmentService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -72,6 +71,24 @@ class RecruitmentControllerTest {
                 .contentType(APPLICATION_JSON).content(mapper.writeValueAsString(saveParam)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("채용공고 등록에 성공했습니다"))
+                .andExpect(jsonPath("$.data").exists());
+    }
+
+    @Test
+    void 채용공고_수정_성공() throws Exception {
+        Map<String, String> updateParam = new HashMap<>();
+        updateParam.put("country", "한국");
+        updateParam.put("region", "서울");
+        updateParam.put("position", "백엔드 주니어 개발자");
+        updateParam.put("reward", "1500000");
+        updateParam.put("techStack", "Python");
+        updateParam.put("detail", "원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..");
+        given(recruitmentService.update(anyLong(), any(RecruitmentUpdateParam.class))).willReturn(response);
+
+        mvc.perform(patch("/recruitments/1")
+                .contentType(APPLICATION_JSON).content(mapper.writeValueAsString(updateParam)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("채용공고 수정에 성공했습니다"))
                 .andExpect(jsonPath("$.data").exists());
     }
 
