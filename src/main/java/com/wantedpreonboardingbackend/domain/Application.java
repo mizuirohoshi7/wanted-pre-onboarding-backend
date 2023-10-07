@@ -1,7 +1,9 @@
 package com.wantedpreonboardingbackend.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = {"recruitment_id", "user_id"})

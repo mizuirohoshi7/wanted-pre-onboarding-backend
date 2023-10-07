@@ -1,7 +1,13 @@
 package com.wantedpreonboardingbackend.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Recruitment {
 
@@ -31,5 +37,16 @@ public class Recruitment {
 
     @Lob
     private String detail;
+
+    @Builder
+    private Recruitment(Company company, String country, String region, String position, Integer reward, String techStack, String detail) {
+        this.company = company;
+        this.country = country;
+        this.region = region;
+        this.position = position;
+        this.reward = reward;
+        this.techStack = techStack;
+        this.detail = detail;
+    }
 
 }
