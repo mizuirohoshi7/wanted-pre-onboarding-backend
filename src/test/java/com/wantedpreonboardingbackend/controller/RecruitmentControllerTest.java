@@ -6,6 +6,7 @@ import com.wantedpreonboardingbackend.domain.Recruitment;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentResponse;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSaveParam;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentUpdateParam;
+import com.wantedpreonboardingbackend.exception.DataNotFoundException;
 import com.wantedpreonboardingbackend.service.RecruitmentService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -74,6 +75,26 @@ class RecruitmentControllerTest {
     }
 
     @Test
+    void 채용공고_등록_없는회사_실패() throws Exception {
+        Map<String, String> saveParam = new HashMap<>();
+        String wrongId = "100";
+        saveParam.put("companyId", wrongId);
+        saveParam.put("country", "한국");
+        saveParam.put("region", "서울");
+        saveParam.put("position", "백엔드 주니어 개발자");
+        saveParam.put("reward", "1500000");
+        saveParam.put("techStack", "Python");
+        saveParam.put("detail", "원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..");
+        given(recruitmentService.save(any(RecruitmentSaveParam.class))).willThrow(new DataNotFoundException("해당 회사가 존재하지 않습니다"));
+
+        mvc.perform(post("/recruitments/save")
+                        .contentType(APPLICATION_JSON).content(mapper.writeValueAsString(saveParam)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("해당 회사가 존재하지 않습니다"))
+                .andExpect(jsonPath("$.data").doesNotExist());
+    }
+
+    @Test
     void 채용공고_수정_성공() throws Exception {
         Map<String, String> updateParam = new HashMap<>();
         updateParam.put("country", "한국");
@@ -92,6 +113,25 @@ class RecruitmentControllerTest {
     }
 
     @Test
+    void 채용공고_수정_없는공고_실패() throws Exception {
+        String wrongId = "100";
+        Map<String, String> updateParam = new HashMap<>();
+        updateParam.put("country", "한국");
+        updateParam.put("region", "서울");
+        updateParam.put("position", "백엔드 주니어 개발자");
+        updateParam.put("reward", "1500000");
+        updateParam.put("techStack", "Python");
+        updateParam.put("detail", "원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..");
+        given(recruitmentService.update(anyLong(), any(RecruitmentUpdateParam.class))).willThrow(new DataNotFoundException("해당 채용공고가 존재하지 않습니다"));
+
+        mvc.perform(patch("/recruitments/" + wrongId)
+                        .contentType(APPLICATION_JSON).content(mapper.writeValueAsString(updateParam)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("해당 채용공고가 존재하지 않습니다"))
+                .andExpect(jsonPath("$.data").doesNotExist());
+    }
+
+    @Test
     void 채용공고_삭제_성공() throws Exception {
         given(recruitmentService.delete(anyLong())).willReturn(response);
 
@@ -99,6 +139,17 @@ class RecruitmentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("채용공고 삭제에 성공했습니다"))
                 .andExpect(jsonPath("$.data").exists());
+    }
+
+    @Test
+    void 채용공고_삭제_없는공고_실패() throws Exception {
+        String wrongId = "100";
+        given(recruitmentService.delete(anyLong())).willThrow(new DataNotFoundException("해당 채용공고가 존재하지 않습니다"));
+
+        mvc.perform(delete("/recruitments/" + wrongId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("해당 채용공고가 존재하지 않습니다"))
+                .andExpect(jsonPath("$.data").doesNotExist());
     }
 
 }

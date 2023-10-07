@@ -5,6 +5,7 @@ import com.wantedpreonboardingbackend.domain.Recruitment;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentResponse;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSaveParam;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentUpdateParam;
+import com.wantedpreonboardingbackend.exception.DataNotFoundException;
 import com.wantedpreonboardingbackend.repository.CompanyRepository;
 import com.wantedpreonboardingbackend.repository.RecruitmentRepository;
 import org.assertj.core.api.Assertions;
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -76,6 +78,23 @@ class RecruitmentServiceTest {
     }
 
     @Test
+    void 채용공고_등록_없는회사_실패() {
+        Long wrongId = 100L;
+        RecruitmentSaveParam saveParam = RecruitmentSaveParam.builder()
+                .companyId(wrongId)
+                .country("한국")
+                .region("서울")
+                .position("백엔드 주니어 개발자")
+                .reward(1500000)
+                .techStack("Python")
+                .detail("원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..")
+                .build();
+        given(companyRepository.findById(anyLong())).willThrow(new DataNotFoundException("해당 회사가 존재하지 않습니다"));
+
+        assertThrows(DataNotFoundException.class, () -> recruitmentService.save(saveParam));
+    }
+
+    @Test
     void 채용공고_수정_성공() {
         Long recruitmentId = 1L;
         RecruitmentUpdateParam updateParam = RecruitmentUpdateParam.builder()
@@ -98,6 +117,22 @@ class RecruitmentServiceTest {
     }
 
     @Test
+    void 채용공고_수정_없는공고_실패() {
+        Long wrongId = 100L;
+        RecruitmentUpdateParam updateParam = RecruitmentUpdateParam.builder()
+                .country("한국")
+                .region("서울")
+                .position("백엔드 주니어 개발자")
+                .reward(1500000)
+                .techStack("Python")
+                .detail("원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..")
+                .build();
+        given(recruitmentRepository.findById(anyLong())).willThrow(new DataNotFoundException("해당 채용공고가 존재하지 않습니다"));
+
+        assertThrows(DataNotFoundException.class, () -> recruitmentService.update(wrongId, updateParam));
+    }
+
+    @Test
     void 채용공고_삭제_성공() {
         Long recruitmentId = 1L;
         given(recruitmentRepository.findById(recruitmentId)).willReturn(Optional.of(recruitment));
@@ -109,6 +144,14 @@ class RecruitmentServiceTest {
         assertThat(response.getPosition()).isEqualTo(recruitment.getPosition());
         assertThat(response.getReward()).isEqualTo(recruitment.getReward());
         assertThat(response.getTechStack()).isEqualTo(recruitment.getTechStack());
+    }
+
+    @Test
+    void 채용공고_삭제_없는공고_실패() {
+        Long wrongId = 100L;
+        given(recruitmentRepository.findById(anyLong())).willThrow(new DataNotFoundException("해당 채용공고가 존재하지 않습니다"));
+
+        assertThrows(DataNotFoundException.class, () -> recruitmentService.delete(wrongId));
     }
 
 }
