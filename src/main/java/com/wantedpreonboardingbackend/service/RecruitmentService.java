@@ -4,13 +4,19 @@ import com.wantedpreonboardingbackend.domain.Company;
 import com.wantedpreonboardingbackend.domain.Recruitment;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentResponse;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSaveParam;
+import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSearchCond;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentUpdateParam;
 import com.wantedpreonboardingbackend.exception.DataNotFoundException;
 import com.wantedpreonboardingbackend.repository.CompanyRepository;
 import com.wantedpreonboardingbackend.repository.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional
@@ -55,6 +61,17 @@ public class RecruitmentService {
         recruitmentRepository.delete(recruitment);
 
         return new RecruitmentResponse(recruitment);
+    }
+
+    public Page<RecruitmentResponse> search(RecruitmentSearchCond searchCond) {
+        List<Recruitment> recruitments = recruitmentRepository.search(searchCond);
+        List<RecruitmentResponse> response = new ArrayList<>();
+
+        for (Recruitment recruitment : recruitments) {
+            response.add(new RecruitmentResponse(recruitment));
+        }
+
+        return new PageImpl<>(response);
     }
 
 }

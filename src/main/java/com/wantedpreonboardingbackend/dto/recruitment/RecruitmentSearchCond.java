@@ -1,38 +1,29 @@
 package com.wantedpreonboardingbackend.dto.recruitment;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class RecruitmentSaveParam {
+public class RecruitmentSearchCond {
 
-    @NotNull
-    private Long companyId;
-
-    @NotEmpty
+    @JsonProperty("recruitment_id")
+    private Long recruitmentId;
+    @JsonProperty("company_name")
+    private String companyName;
     private String country;
-
-    @NotEmpty
     private String region;
-
-    @NotEmpty
     private String position;
-
-    @NotNull
     private Integer reward;
-
-    @NotEmpty
     private String techStack;
-
     private String detail;
 
     @Builder
-    private RecruitmentSaveParam(Long companyId, String country, String region, String position, Integer reward, String techStack, String detail) {
-        this.companyId = companyId;
+    private RecruitmentSearchCond(Long recruitmentId, String companyName, String country, String region, String position, Integer reward, String techStack, String detail) {
+        this.recruitmentId = recruitmentId;
+        this.companyName = companyName;
         this.country = country;
         this.region = region;
         this.position = position;

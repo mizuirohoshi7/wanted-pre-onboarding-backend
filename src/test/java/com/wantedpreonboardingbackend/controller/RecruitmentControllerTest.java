@@ -5,6 +5,7 @@ import com.wantedpreonboardingbackend.domain.Company;
 import com.wantedpreonboardingbackend.domain.Recruitment;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentResponse;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSaveParam;
+import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSearchCond;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentUpdateParam;
 import com.wantedpreonboardingbackend.exception.DataNotFoundException;
 import com.wantedpreonboardingbackend.service.RecruitmentService;
@@ -13,9 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -39,6 +45,7 @@ class RecruitmentControllerTest {
     RecruitmentService recruitmentService;
 
     static RecruitmentResponse response;
+    static Page<RecruitmentResponse> page;
 
     @BeforeAll
     static void beforeAll() {
@@ -53,6 +60,7 @@ class RecruitmentControllerTest {
                 .detail("원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..")
                 .build();
         response = new RecruitmentResponse(recruitment);
+        page = new PageImpl<>(List.of(response));
     }
 
     @Test
@@ -150,6 +158,50 @@ class RecruitmentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("해당 채용공고가 존재하지 않습니다"))
                 .andExpect(jsonPath("$.data").doesNotExist());
+    }
+
+    @Test
+    void 채용공고_전체_조회_성공() throws Exception {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        given(recruitmentService.search(any(RecruitmentSearchCond.class))).willReturn(page);
+
+        mvc.perform(get("/recruitments").params(params))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("채용공고 검색에 성공했습니다"))
+                .andExpect(jsonPath("$.data").exists());
+    }
+
+    @Test
+    void 채용공고_일부조건_조회_성공() throws Exception {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("country", "한국");
+        params.add("region", "서울");
+        params.add("position", "백엔드");
+        given(recruitmentService.search(any(RecruitmentSearchCond.class))).willReturn(page);
+
+        mvc.perform(get("/recruitments").params(params))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("채용공고 검색에 성공했습니다"))
+                .andExpect(jsonPath("$.data").exists());
+    }
+
+    @Test
+    void 채용공고_모든조건_조회_성공() throws Exception {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("recruitment_id", "1");
+        params.add("company_name", "원티드랩");
+        params.add("country", "한국");
+        params.add("region", "서울");
+        params.add("position", "백엔드");
+        params.add("reward", "1500000");
+        params.add("techStack", "Python");
+        params.add("detail", "원티드랩에서");
+        given(recruitmentService.search(any(RecruitmentSearchCond.class))).willReturn(page);
+
+        mvc.perform(get("/recruitments").params(params))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("채용공고 검색에 성공했습니다"))
+                .andExpect(jsonPath("$.data").exists());
     }
 
 }

@@ -4,19 +4,21 @@ import com.wantedpreonboardingbackend.domain.Company;
 import com.wantedpreonboardingbackend.domain.Recruitment;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentResponse;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSaveParam;
+import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSearchCond;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentUpdateParam;
 import com.wantedpreonboardingbackend.exception.DataNotFoundException;
 import com.wantedpreonboardingbackend.repository.CompanyRepository;
 import com.wantedpreonboardingbackend.repository.RecruitmentRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +41,7 @@ class RecruitmentServiceTest {
 
     static Recruitment recruitment;
     static Company company;
+    static List<Recruitment> recruitments = new ArrayList<>();
 
     @BeforeAll
     static void beforeAll() {
@@ -52,6 +55,7 @@ class RecruitmentServiceTest {
                 .techStack("Python")
                 .detail("원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..")
                 .build();
+        recruitments.add(recruitment);
     }
 
     @Test
@@ -152,6 +156,68 @@ class RecruitmentServiceTest {
         given(recruitmentRepository.findById(anyLong())).willThrow(new DataNotFoundException("해당 채용공고가 존재하지 않습니다"));
 
         assertThrows(DataNotFoundException.class, () -> recruitmentService.delete(wrongId));
+    }
+
+    @Test
+    void 채용공고_전체_조회_성공() {
+        RecruitmentSearchCond searchCond = RecruitmentSearchCond.builder().build();
+        given(recruitmentRepository.search(any(RecruitmentSearchCond.class))).willReturn(recruitments);
+
+        Page<RecruitmentResponse> page = recruitmentService.search(searchCond);
+
+        for (RecruitmentResponse response : page) {
+            assertThat(response.getCountry()).isNotEmpty();
+            assertThat(response.getRegion()).isNotEmpty();
+            assertThat(response.getPosition()).isNotEmpty();
+            assertThat(response.getReward()).isNotNull();
+            assertThat(response.getTechStack()).isNotEmpty();
+        }
+    }
+
+    @Test
+    void 채용공고_일부조건_조회_성공() {
+        RecruitmentSearchCond searchCond = RecruitmentSearchCond.builder()
+                .country("한국")
+                .region("서울")
+                .position("백엔드")
+                .build();
+        given(recruitmentRepository.search(any(RecruitmentSearchCond.class))).willReturn(recruitments);
+
+        Page<RecruitmentResponse> page = recruitmentService.search(searchCond);
+
+        for (RecruitmentResponse response : page) {
+            assertThat(response.getCountry()).contains("한국");
+            assertThat(response.getRegion()).contains("서울");
+            assertThat(response.getPosition()).contains("백엔드");
+            assertThat(response.getReward()).isNotNull();
+            assertThat(response.getTechStack()).isNotEmpty();
+        }
+    }
+
+    @Test
+    void 채용공고_모든조건_조회_성공() {
+        RecruitmentSearchCond searchCond = RecruitmentSearchCond.builder()
+                .recruitmentId(1L)
+                .companyName("원티드랩")
+                .country("한국")
+                .region("서울")
+                .position("백엔드")
+                .reward(1500000)
+                .techStack("Python")
+                .detail("원티드랩에서")
+                .build();
+        given(recruitmentRepository.search(any(RecruitmentSearchCond.class))).willReturn(recruitments);
+
+        Page<RecruitmentResponse> page = recruitmentService.search(searchCond);
+
+        for (RecruitmentResponse response : page) {
+            assertThat(response.getCompanyName()).contains("원티드랩");
+            assertThat(response.getCountry()).contains("한국");
+            assertThat(response.getRegion()).contains("서울");
+            assertThat(response.getPosition()).contains("백엔드");
+            assertThat(response.getReward()).isGreaterThanOrEqualTo(1500000);
+            assertThat(response.getTechStack()).contains("Python");
+        }
     }
 
 }
