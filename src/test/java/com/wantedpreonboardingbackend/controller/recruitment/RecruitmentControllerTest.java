@@ -1,11 +1,12 @@
-package com.wantedpreonboardingbackend.controller;
+package com.wantedpreonboardingbackend.controller.recruitment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wantedpreonboardingbackend.controller.recruitment.RecruitmentController;
 import com.wantedpreonboardingbackend.domain.Company;
 import com.wantedpreonboardingbackend.domain.Recruitment;
 import com.wantedpreonboardingbackend.dto.recruitment.*;
 import com.wantedpreonboardingbackend.exception.DataNotFoundException;
-import com.wantedpreonboardingbackend.service.RecruitmentService;
+import com.wantedpreonboardingbackend.service.recruitment.RecruitmentService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

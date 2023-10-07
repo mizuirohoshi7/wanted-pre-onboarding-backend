@@ -1,4 +1,4 @@
-package com.wantedpreonboardingbackend.repository;
+package com.wantedpreonboardingbackend.repository.recruitment;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;

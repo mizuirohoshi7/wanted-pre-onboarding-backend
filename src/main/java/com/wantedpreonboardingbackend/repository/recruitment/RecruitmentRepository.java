@@ -1,4 +1,4 @@
-package com.wantedpreonboardingbackend.repository;
+package com.wantedpreonboardingbackend.repository.recruitment;
 
 import com.wantedpreonboardingbackend.domain.Recruitment;
 import org.springframework.data.jpa.repository.JpaRepository;

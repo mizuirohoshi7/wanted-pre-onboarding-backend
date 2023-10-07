@@ -1,11 +1,11 @@
-package com.wantedpreonboardingbackend.service;
+package com.wantedpreonboardingbackend.service.recruitment;
 
 import com.wantedpreonboardingbackend.domain.Company;
 import com.wantedpreonboardingbackend.domain.Recruitment;
 import com.wantedpreonboardingbackend.dto.recruitment.*;
 import com.wantedpreonboardingbackend.exception.DataNotFoundException;
-import com.wantedpreonboardingbackend.repository.CompanyRepository;
-import com.wantedpreonboardingbackend.repository.RecruitmentRepository;
+import com.wantedpreonboardingbackend.repository.company.CompanyRepository;
+import com.wantedpreonboardingbackend.repository.recruitment.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
-@Transactional
 @Service
+@Transactional
 public class RecruitmentService {
 
     private final RecruitmentRepository recruitmentRepository;

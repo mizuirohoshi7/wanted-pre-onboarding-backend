@@ -2,8 +2,10 @@ package com.wantedpreonboardingbackend;
 
 import com.wantedpreonboardingbackend.domain.Company;
 import com.wantedpreonboardingbackend.domain.Recruitment;
-import com.wantedpreonboardingbackend.repository.CompanyRepository;
-import com.wantedpreonboardingbackend.repository.RecruitmentRepository;
+import com.wantedpreonboardingbackend.domain.User;
+import com.wantedpreonboardingbackend.repository.company.CompanyRepository;
+import com.wantedpreonboardingbackend.repository.recruitment.RecruitmentRepository;
+import com.wantedpreonboardingbackend.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -15,6 +17,7 @@ public class InitData {
 
     private final CompanyRepository companyRepository;
     private final RecruitmentRepository recruitmentRepository;
+    private final UserRepository userRepository;
 
     @EventListener(ApplicationReadyEvent.class)
     public void init() {
@@ -31,6 +34,9 @@ public class InitData {
                 .detail("원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..")
                 .build();
         recruitmentRepository.save(recruitment);
+
+        User user = new User("사용자");
+        userRepository.save(user);
     }
 
 }

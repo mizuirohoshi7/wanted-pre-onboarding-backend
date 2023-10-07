@@ -1,7 +1,8 @@
-package com.wantedpreonboardingbackend.repository;
+package com.wantedpreonboardingbackend.repository.recruitment;
 
 import com.wantedpreonboardingbackend.domain.Recruitment;
 import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSearchCond;
+import com.wantedpreonboardingbackend.repository.recruitment.RecruitmentRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

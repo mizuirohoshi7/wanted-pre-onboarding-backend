@@ -1,11 +1,12 @@
-package com.wantedpreonboardingbackend.service;
+package com.wantedpreonboardingbackend.service.recruitment;
 
 import com.wantedpreonboardingbackend.domain.Company;
 import com.wantedpreonboardingbackend.domain.Recruitment;
 import com.wantedpreonboardingbackend.dto.recruitment.*;
 import com.wantedpreonboardingbackend.exception.DataNotFoundException;
-import com.wantedpreonboardingbackend.repository.CompanyRepository;
-import com.wantedpreonboardingbackend.repository.RecruitmentRepository;
+import com.wantedpreonboardingbackend.repository.company.CompanyRepository;
+import com.wantedpreonboardingbackend.repository.recruitment.RecruitmentRepository;
+import com.wantedpreonboardingbackend.service.recruitment.RecruitmentService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -220,7 +221,7 @@ class RecruitmentServiceTest {
     @Test
     void 채용공고상세_조회_성공() {
         given(recruitmentRepository.findById(anyLong())).willReturn(Optional.of(recruitment));
-        given(recruitmentRepository.findByCompanyId(any())).willReturn(recruitments);
+        given(recruitmentRepository.findByCompanyId(any())).willReturn(new ArrayList<>());
 
         RecruitmentDetailResponse response = recruitmentService.findById(1L);
 

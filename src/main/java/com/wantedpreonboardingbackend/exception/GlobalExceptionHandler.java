@@ -12,4 +12,9 @@ public class GlobalExceptionHandler {
         return new Result<>(e.getMessage(), null);
     }
 
+    @ExceptionHandler(DuplicateApplicationException.class)
+    private Result<?> duplicateApplication(DuplicateApplicationException e) {
+        return new Result<>(e.getMessage(), null);
+    }
+
 }

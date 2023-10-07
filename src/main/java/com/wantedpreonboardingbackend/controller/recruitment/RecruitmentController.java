@@ -1,9 +1,9 @@
-package com.wantedpreonboardingbackend.controller;
+package com.wantedpreonboardingbackend.controller.recruitment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wantedpreonboardingbackend.dto.Result;
 import com.wantedpreonboardingbackend.dto.recruitment.*;
-import com.wantedpreonboardingbackend.service.RecruitmentService;
+import com.wantedpreonboardingbackend.service.recruitment.RecruitmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
