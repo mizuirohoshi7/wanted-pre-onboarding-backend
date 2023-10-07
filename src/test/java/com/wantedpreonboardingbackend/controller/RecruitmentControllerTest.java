@@ -3,10 +3,7 @@ package com.wantedpreonboardingbackend.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wantedpreonboardingbackend.domain.Company;
 import com.wantedpreonboardingbackend.domain.Recruitment;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentResponse;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSaveParam;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSearchCond;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentUpdateParam;
+import com.wantedpreonboardingbackend.dto.recruitment.*;
 import com.wantedpreonboardingbackend.exception.DataNotFoundException;
 import com.wantedpreonboardingbackend.service.RecruitmentService;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +44,7 @@ class RecruitmentControllerTest {
 
     static RecruitmentResponse response;
     static Page<RecruitmentResponse> page;
+    static RecruitmentDetailResponse detailResponse;
 
     @BeforeAll
     static void beforeAll() {
@@ -61,6 +60,7 @@ class RecruitmentControllerTest {
                 .build();
         response = new RecruitmentResponse(recruitment);
         page = new PageImpl<>(List.of(response));
+        detailResponse = new RecruitmentDetailResponse(recruitment, new ArrayList<>());
     }
 
     @Test
@@ -202,6 +202,27 @@ class RecruitmentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("채용공고 검색에 성공했습니다"))
                 .andExpect(jsonPath("$.data").exists());
+    }
+
+    @Test
+    void 채용공고상세_조회_성공() throws Exception {
+        given(recruitmentService.findById(anyLong())).willReturn(detailResponse);
+
+        mvc.perform(get("/recruitments/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("채용공고 상세 조회에 성공했습니다"))
+                .andExpect(jsonPath("$.data").exists());
+    }
+
+    @Test
+    void 채용공고상세_조회_실패() throws Exception {
+        Long wrongId = 100L;
+        given(recruitmentService.findById(anyLong())).willThrow(new DataNotFoundException("해당 채용공고가 존재하지 않습니다"));
+
+        mvc.perform(get("/recruitments/" + wrongId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("해당 채용공고가 존재하지 않습니다"))
+                .andExpect(jsonPath("$.data").doesNotExist());
     }
 
 }

@@ -2,10 +2,7 @@ package com.wantedpreonboardingbackend.service;
 
 import com.wantedpreonboardingbackend.domain.Company;
 import com.wantedpreonboardingbackend.domain.Recruitment;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentResponse;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSaveParam;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSearchCond;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentUpdateParam;
+import com.wantedpreonboardingbackend.dto.recruitment.*;
 import com.wantedpreonboardingbackend.exception.DataNotFoundException;
 import com.wantedpreonboardingbackend.repository.CompanyRepository;
 import com.wantedpreonboardingbackend.repository.RecruitmentRepository;
@@ -93,7 +90,7 @@ class RecruitmentServiceTest {
                 .techStack("Python")
                 .detail("원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..")
                 .build();
-        given(companyRepository.findById(anyLong())).willThrow(new DataNotFoundException("해당 회사가 존재하지 않습니다"));
+        given(companyRepository.findById(anyLong())).willReturn(Optional.empty());
 
         assertThrows(DataNotFoundException.class, () -> recruitmentService.save(saveParam));
     }
@@ -131,7 +128,7 @@ class RecruitmentServiceTest {
                 .techStack("Python")
                 .detail("원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..")
                 .build();
-        given(recruitmentRepository.findById(anyLong())).willThrow(new DataNotFoundException("해당 채용공고가 존재하지 않습니다"));
+        given(recruitmentRepository.findById(anyLong())).willReturn(Optional.empty());
 
         assertThrows(DataNotFoundException.class, () -> recruitmentService.update(wrongId, updateParam));
     }
@@ -153,7 +150,7 @@ class RecruitmentServiceTest {
     @Test
     void 채용공고_삭제_없는공고_실패() {
         Long wrongId = 100L;
-        given(recruitmentRepository.findById(anyLong())).willThrow(new DataNotFoundException("해당 채용공고가 존재하지 않습니다"));
+        given(recruitmentRepository.findById(anyLong())).willReturn(Optional.empty());
 
         assertThrows(DataNotFoundException.class, () -> recruitmentService.delete(wrongId));
     }
@@ -218,6 +215,30 @@ class RecruitmentServiceTest {
             assertThat(response.getReward()).isGreaterThanOrEqualTo(1500000);
             assertThat(response.getTechStack()).contains("Python");
         }
+    }
+
+    @Test
+    void 채용공고상세_조회_성공() {
+        given(recruitmentRepository.findById(anyLong())).willReturn(Optional.of(recruitment));
+        given(recruitmentRepository.findByCompanyId(any())).willReturn(recruitments);
+
+        RecruitmentDetailResponse response = recruitmentService.findById(1L);
+
+        assertThat(response.getCompanyName()).isNotEmpty();
+        assertThat(response.getCountry()).isNotEmpty();
+        assertThat(response.getRegion()).isNotEmpty();
+        assertThat(response.getPosition()).isNotEmpty();
+        assertThat(response.getReward()).isNotNull();
+        assertThat(response.getTechStack()).isNotEmpty();
+        assertThat(response.getDetail()).isNotEmpty();
+        assertThat(response.getAnotherRecruitments()).isNotNull();
+    }
+
+    @Test
+    void 채용공고상세_조회_실패() {
+        given(recruitmentRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        assertThrows(DataNotFoundException.class, () -> recruitmentService.findById(1L));
     }
 
 }

@@ -2,10 +2,7 @@ package com.wantedpreonboardingbackend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wantedpreonboardingbackend.dto.Result;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentResponse;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSaveParam;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSearchCond;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentUpdateParam;
+import com.wantedpreonboardingbackend.dto.recruitment.*;
 import com.wantedpreonboardingbackend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -45,6 +42,12 @@ public class RecruitmentController {
         Page<RecruitmentResponse> page = recruitmentService.search(searchCond);
 
         return new Result<>("채용공고 검색에 성공했습니다", page);
+    }
+
+    @GetMapping("/{recruitmentId}")
+    public Result<RecruitmentDetailResponse> detail(@PathVariable Long recruitmentId) {
+        RecruitmentDetailResponse response = recruitmentService.findById(recruitmentId);
+        return new Result<>("채용공고 상세 조회에 성공했습니다", response);
     }
 
 }

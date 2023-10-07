@@ -2,10 +2,7 @@ package com.wantedpreonboardingbackend.service;
 
 import com.wantedpreonboardingbackend.domain.Company;
 import com.wantedpreonboardingbackend.domain.Recruitment;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentResponse;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSaveParam;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentSearchCond;
-import com.wantedpreonboardingbackend.dto.recruitment.RecruitmentUpdateParam;
+import com.wantedpreonboardingbackend.dto.recruitment.*;
 import com.wantedpreonboardingbackend.exception.DataNotFoundException;
 import com.wantedpreonboardingbackend.repository.CompanyRepository;
 import com.wantedpreonboardingbackend.repository.RecruitmentRepository;
@@ -72,6 +69,21 @@ public class RecruitmentService {
         }
 
         return new PageImpl<>(response);
+    }
+
+    public RecruitmentDetailResponse findById(Long recruitmentId) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new DataNotFoundException("해당 채용공고가 존재하지 않습니다"));
+        List<Recruitment> anotherRecruitments = recruitmentRepository.findByCompanyId(recruitment.getCompany().getId());
+
+        List<Long> anotherIds = new ArrayList<>();
+        for (Recruitment anotherRecruitment : anotherRecruitments) {
+            if (!anotherRecruitment.getId().equals(recruitmentId)) {
+                anotherIds.add(anotherRecruitment.getId());
+            }
+        }
+
+        return new RecruitmentDetailResponse(recruitment, anotherIds);
     }
 
 }
