@@ -21,8 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -89,6 +88,16 @@ class RecruitmentControllerTest {
                 .contentType(APPLICATION_JSON).content(mapper.writeValueAsString(updateParam)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("채용공고 수정에 성공했습니다"))
+                .andExpect(jsonPath("$.data").exists());
+    }
+
+    @Test
+    void 채용공고_삭제_성공() throws Exception {
+        given(recruitmentService.delete(anyLong())).willReturn(response);
+
+        mvc.perform(delete("/recruitments/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("채용공고 삭제에 성공했습니다"))
                 .andExpect(jsonPath("$.data").exists());
     }
 

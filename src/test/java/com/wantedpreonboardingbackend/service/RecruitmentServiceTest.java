@@ -97,4 +97,18 @@ class RecruitmentServiceTest {
         assertThat(response.getTechStack()).isEqualTo(updateParam.getTechStack());
     }
 
+    @Test
+    void 채용공고_삭제_성공() {
+        Long recruitmentId = 1L;
+        given(recruitmentRepository.findById(recruitmentId)).willReturn(Optional.of(recruitment));
+
+        RecruitmentResponse response = recruitmentService.delete(recruitmentId);
+
+        assertThat(response.getCountry()).isEqualTo(recruitment.getCountry());
+        assertThat(response.getRegion()).isEqualTo(recruitment.getRegion());
+        assertThat(response.getPosition()).isEqualTo(recruitment.getPosition());
+        assertThat(response.getReward()).isEqualTo(recruitment.getReward());
+        assertThat(response.getTechStack()).isEqualTo(recruitment.getTechStack());
+    }
+
 }

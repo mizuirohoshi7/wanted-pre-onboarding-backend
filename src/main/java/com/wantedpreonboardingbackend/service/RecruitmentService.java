@@ -48,4 +48,13 @@ public class RecruitmentService {
         return new RecruitmentResponse(updatedRecruitment);
     }
 
+    public RecruitmentResponse delete(Long recruitmentId) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new DataNotFoundException("해당 채용공고가 존재하지 않습니다"));
+
+        recruitmentRepository.delete(recruitment);
+
+        return new RecruitmentResponse(recruitment);
+    }
+
 }

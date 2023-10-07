@@ -27,4 +27,10 @@ public class RecruitmentController {
         return new Result<>("채용공고 수정에 성공했습니다", response);
     }
 
+    @DeleteMapping("/{recruitmentId}")
+    public Result<RecruitmentResponse> delete(@PathVariable Long recruitmentId) {
+        RecruitmentResponse response = recruitmentService.delete(recruitmentId);
+        return new Result<>("채용공고 삭제에 성공했습니다", response);
+    }
+
 }
